@@ -1,7 +1,6 @@
 export class Player {
   constructor(
-    public first: string,
-    public last: string,
+    public name: string,
     public pos: string,
     public team: string,
     public proj_ppg: number,

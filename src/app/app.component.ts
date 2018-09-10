@@ -8,50 +8,29 @@ import { Player } from './player';
 })
 
 export class AppComponent implements OnInit{
-	title = 'ffdrafter-display';
-	sort_value = "First";
+	title: string = 'ffdrafter-display';
+	sort_value = "Name";
 	filter_value = "";
 	players = [
-			new Player("Tyrod", "Taylor", "QB", "Cle", 406.345, 0.45, 21.12),
-			new Player("Baker", "Mayfield", "QB", "Cle", 52.523, 4.23, 5.22),
-			new Player("Jarvis", "Landry", "WR", "Cle", 154.21, -.98, 78.26),
-			new Player("Josh", "Gordon", "WR", "Cle", 4200.345, 4.20, 99.12),
+			new Player("T.Taylor", "QB", "Cle", 16.345, 0.45, 21.12),
+			new Player("B.Mayfield", "QB", "Cle", 10.523, 4.23, 5.22),
+			new Player("J.Landry", "WR", "Cle", 14.21, -.98, 78.26),
+			new Player("J.Gordon", "WR", "Cle", 42.345, 4.20, 99.12),
 			];
 	all_players = this.players;
 	private fileText;
 
 
 	ngOnInit(){
-		this.players.sort( function(player1, player2) {
-			if ( player1.first < player2.first ){
-				return -1;
-			}else if( player1.first > player2.first ){
-				return 1;
-			}else{
-				return 0;	
-			}
-		});
+		this.sort_name()
 	}
 
-	sort_first(){
-		this.sort_value = "First";
+	sort_name(){
+		this.sort_value = "Name";
 		this.players.sort( function(player1, player2) {
-			if ( player1.first < player2.first ){
+			if ( player1.name < player2.name ){
 				return -1;
-			}else if( player1.first > player2.first ){
-				return 1;
-			}else{
-				return 0;	
-			}
-		});
-	}
-
-	sort_last(){
-		this.sort_value = "Last";
-		this.players.sort( function(player1, player2) {
-			if ( player1.last < player2.last ){
-				return -1;
-			}else if( player1.last > player2.last ){
+			}else if( player1.name > player2.name ){
 				return 1;
 			}else{
 				return 0;	
@@ -180,8 +159,47 @@ export class AppComponent implements OnInit{
 		var me = this;
 
 		reader.onload = function () {
-			console.log(reader)
 			me.fileText = reader.result;
+			me.fileText = JSON.parse(me.fileText)
+			me.addPlayer(me.fileText.p1)
+			me.addPlayer(me.fileText.p2)
 		}
 	}
+	
+	addPlayer(data){
+		var newPlayer = new Player(data.name, "QB", "GB", data.Projected.ppg, data.Risk, data.Projected.pgg - this.getPositionalValue("QB"))
+		this.players.push(newPlayer)
+		this.updatePVs();
+	}
+
+	removePlayer(index){
+		this.players.splice(index, 1)
+	}
+
+	getPositionalValue(pos){
+		// Calculating value above "replacement player in next round"
+
+		var totalPPG = 0;
+		var num_players = 0;
+		for(let player of this.players){
+			if (player.pos == pos){
+				++num_players;
+				totalPPG += player.proj_ppg;
+			}
+			if(num_players > 5){
+				break;
+			}
+
+		}
+
+		return totalPPG/num_players
+	}
+
+	updatePVs(){
+		this.sort_proj_ppg();
+		for(let player of this.players){
+			player.pos_value = player.proj_ppg - this.getPositionalValue(player.pos)
+		}
+	}
+
 }

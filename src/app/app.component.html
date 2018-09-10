@@ -25,10 +25,7 @@
   <thead>
     <tr>
       <th scope="col">
-        <button (click)='this.sort_first()' type="button" class="btn btn-primary" [ngClass]="{'ffd-sort': this.sort_value == 'First'}">First</button>
-      </th>
-      <th scope="col">
-        <button (click)='this.sort_last()' type="button" class="btn btn-primary" [ngClass]="{'ffd-sort': this.sort_value == 'Last'}">Last</button>
+        <button (click)='this.sort_name()' type="button" class="btn btn-primary" [ngClass]="{'ffd-sort': this.sort_value == 'Name'}">Name</button>
       </th>
       <th scope="col">
         <button (click)='this.sort_pos()' type="button" class="btn btn-primary" [ngClass]="{'ffd-sort': this.sort_value == 'Position'}">Position</button>
@@ -49,13 +46,14 @@
   </thead>
   <tbody>
     <tr *ngFor="let player of players">
-      <td>{{player.first}}</td>
-      <td>{{ player.last }} </td>
+      <td>{{player.name}}</td>
       <td>{{ player.pos }}</td>
       <td>{{ player.team }}</td>
       <td>{{ player.proj_ppg }} </td>
       <td>{{ player.risk }}</td>
       <td>{{ player.pos_value }}</td>
+      <!-- Need to get index and send it here -->
+      <button (click)="removePlayer(index)" type="button" class="btn btn-primary">X</button>
     </tr>
   </tbody>
 </table>
@@ -66,8 +64,10 @@ type="file"
 accept=".json" 
 (change)="fileUpload($event)">
  
-<textarea *ngIf="this.fileText" rows="4" cols="50">
-  {{fileText[0]}}
+<!-- <textarea *ngIf="this.fileText" rows="4" cols="50">
   {{fileText[1]}}
   {{fileText[2]}}
-</textarea>
+</textarea> -->
+
+
+<button (click)="updatePVs()" type="button" class="btn btn-primary">Update Positional Values</button>
